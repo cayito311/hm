@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Time - Menú Digital</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <style>
+        /* Estilos base */
+        body {
+            background-color: #000000;
+            color: #FFFFFF;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding-bottom: 60px;
+        }
+
+        .header {
+            background-color: #000000;
+            color: #FFA500;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #FFA500;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo img {
+            max-height: 100px; /* Ajusta la altura máxima del logo según tus necesidades */
+            /* Puedes agregar más estilos si es necesario */
+        }
+
+        .icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .cart-icon, .history-icon {
+            position: relative;
+            font-size: 24px;
+            color: #FFD700;
+            cursor: pointer;
+            padding: 10px;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #FF4444;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 12px;
+        }
+
+        /* Menú de Categorías */
+        .category-filter {
+            display: flex;
+            flex-direction: column; /* Alineación vertical */
+            align-items: center;
+            gap: 15px;
+            padding: 30px;
+        }
+
+        .category-filter button {
+            padding: 15px 30px;
+            border: none;
+            background-color: #FFA500;
+            color: #000000;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+            width: 80%; /* Ajuste de ancho para formato vertical */
+        }
+
+        .category-filter button:hover {
+            background-color: #FFD700;
+            transform: scale(1.05);
+        }
+
+        /* Menú de Productos */
+        .menu-section {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .menu-item {
+            background: #1c1c1c;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .menu-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .menu-item img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .menu-item-content {
+            padding: 15px;
+        }
+
+        .menu-item h3 {
+            color: #FFA500;
+            margin: 0 0 10px 0;
+            font-size: 1.2em;
+        }
+
+        .menu-item .description {
+            color: #CCCCCC;
+            margin-bottom: 15px;
+            font-size: 0.9em;
+        }
+
+        .menu-item .price {
+            font-size: 1.2em;
+            color: #FFA500;
+            font-weight: bold;
+        }
+
+
+        /* Botón de Retroceso */
+        .back-btn {
+            background-color: #FFA500;
+            color: #000000;
+            padding: 10px 20px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .back-btn:hover {
+            background-color: #FFD700;
+            transform: scale(1.05);
+        }
+        .contact-info {
+    color: #FFD700;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Espacio entre los elementos */
+}
+
+    </style>
+</head>
+<body>
+    <div></div>
+    <header class="header">
+        <div class="logo">
+            <img src="logo.png" alt="Logo de Home Time">
+        </div>
+        <div class="contact-info">
+            <span>Contáctanos: </span>
+            <a href="https://wa.me/573107421246" style="color: #1eff00;">Whatsapp</a>
+            <span> | </span>
+            <a href="https://www.instagram.com/Hometimectg" style="color: #ff49a4;">Instagram</a>
+        </div>
+    </header>
+        
+        <!-- Si tienes íconos como carrito y historial, asegúrate de agregarlos aquí -->
+        </div>
+        
+    </header>
+
+    <!-- Menú de Categorías -->
+    <section id="categoryMenu" class="category-filter">
+        <button onclick="showProducts('Todos')">Todos</button>
+        <button onclick="showProducts('Arepas')">Arepas</button>
+        <button onclick="showProducts('Hamburguesas')">Hamburguesas</button>
+        <button onclick="showProducts('Perros')">Perros</button>
+        <button onclick="showProducts('Patacones')">Patacones</button>
+        <button onclick="showProducts('Picadas')">Picadas</button>
+        <button onclick="showProducts('Asados')">Asados</button>
+        <button onclick="showProducts('Bebidas')">Bebidas</button>
+    </section>
+
+    <!-- Menú de Productos -->
+    <section id="productMenu" class="menu-section" style="display: none;">
+        <button class="back-btn" onclick="backToCategories()">⬅ Volver a Categorías</button>
+        <div id="menuItems"></div>
+    </section>
+
+    <script>
+    const menuItems = [
+    // Hamburguesas 
+    {
+        id: 1,
+        name: "Pa' Pelaos Home Time",
+        description: "Pan, cebolla, carne Home Time, queso mozarella, salsas, jamón, papitas fosforito.",
+        price: 15,
+        category: "Hamburguesas",
+        image: "https://img.freepik.com/foto-gratis/vista-lateral-hamburguesa-pollo-filete-pollo-fuego-lento-queso-tomate-lechuga-bollos-hamburguesa_141793-4816.jpg?ga=GA1.1.734651433.1732404968&semt=ais_hybrid"
+    },
+    {
+        id: 2,
+        name: "Doncella Home Time",
+        description: "Pan, tomate verde, lechuga crespa, carne Home Time, queso mozarella, salsas, jamón, papitas fosforito.",
+        price: 15,
+        category: "Hamburguesas",
+        image: "https://img.freepik.com/foto-gratis/cerca-hamburguesa-ternera-queso-cheddar-derretido-tomate-lechuga-mayonesa_140725-10723.jpg?ga=GA1.1.734651433.1732404968&semt=ais_hybrid"
+    },
+    {
+        id: 3,
+        name: "Home Time Con Todo",
+        description: "Tomate verde, cebolla blanca, lechuga, salsas, papita ripio, carne Home Time y pan.",
+        price: 15,
+        category: "Hamburguesas",
+        image: "https://img.freepik.com/foto-gratis/acercamiento-persona-que-disfruta-comida_23-2149303570.jpg?ga=GA1.1.734651433.1732404968&semt=ais_hybrid"
+    },
+    {
+        id: 4,
+        name: "Home Time Pollo",
+        description: "Pan, queso mozarella, tomate verde, cebolla, carne de pollo Home Time, lechuga crespa, salsas.",
+        price: 17,
+        category: "Hamburguesas",
+        image: "https://img.freepik.com/foto-gratis/vista-frontal-hamburguesas-stand_141793-15545.jpg?ga=GA1.1.734651433.1732404968&semt=ais_hybrid"
+    },
+    {
+        id: 5,
+        name: "Home Time Mixta",
+        description: "Pan, tomate verde, queso mozarella, cebolla, carne de pollo Home Time, carne de res Home Time, lechuga crespa, salsas.",
+        price: 32,
+        category: "Hamburguesas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 6,
+        name: "América Home Time",
+        description: "Pan, doble carne Home Time, tomate verde, cebolla, lechuga crespa, salsas, jamón, doble queso mozarella.",
+        price: 30,
+        category: "Hamburguesas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 7,
+        name: "Maxi Home Time Sencilla",
+        description: "Pan, tomate verde, cebolla, pepinillos agridulces, carne de res Home Time, lechuga crespa, salsas, jamón, queso mozarella, plátano maduro y baño en queso mozarella.",
+        price: 25,
+        category: "Hamburguesas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 8,
+        name: "Maxi Home Time Doble Carne",
+        description: "Pan, tomate verde, cebolla, pepinillos agridulces, doble carne de res Home Time, lechuga crespa, salsas, jamón, queso mozarella, plátano maduro y baño en queso mozarella, tocineta.",
+        price: 34,
+        category: "Hamburguesas",
+        image: "https://via.placeholder.com/280x200"
+    },
+
+    // Perros Calientes
+    {
+        id: 9,
+        name: "Pa' Pelaos Home Time",
+        description: "Pan, cebolla, salchicha, queso mozzarella, salsas, papitas fosforito.",
+        price: 12,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 10,
+        name: "Doncella Home Time",
+        description: "Pan, salchicha super, queso mozzarella gratinado, pocas salsas.",
+        price: 12,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 11,
+        name: "América Home Time",
+        description: "Pan, salchicha americana, queso mozzarella, salsas lechuga, papitas fosforito.",
+        price: 15,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 12,
+        name: "Chori Home Time",
+        description: "Pan, chorizo, pepinillos agridulces, jamón, salsas, queso mozzarella, tomate, cebolla, lechuga, papitas fosforito.",
+        price: 18,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 13,
+        name: "Suizo Home Time",
+        description: "Pan, salchicha suiza, cebolla, queso mozzarella, salsas, lechuga, papitas fosforito, jamón.",
+        price: 18,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 14,
+        name: "Home Time",
+        description: "Pan extra grande, salchicha super, queso mozzarella, salsas, papita fosforito, pepinillo agridulce, tocineta.",
+        price: 24,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 15,
+        name: "XL Home Time",
+        description: "Pan extragrande, salchicha XL, pepinillos agridulces, tocineta, queso mozzarella, tomate, cebolla, lechuga, papitas fosforito.",
+        price: 28,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 16,
+        name: "Maxi Home Time de la Casa",
+        description: "Pan extragrande, salchicha alemana extragrande, pepinillos agridulces, tocineta, jamón, salsas, queso mozzarella, plátano maduro, cebolla, lechuga, papitas fosforito.",
+        price: 30,
+        category: "Perros",
+        image: "https://via.placeholder.com/280x200"
+    },
+
+    
+    // Arepas
+    {
+        id: 17,
+        name: "Jamón y Queso",
+        description: "Arepa con jamón y queso.",
+        price: 12,
+        category: "Arepas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 18,
+        name: "Hawaiana",
+        description: "Arepa con jamón, queso y piña.",
+        price: 15,
+        category: "Arepas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 19,
+        name: "Chorizo y Butifarra",
+        description: "Arepa con chorizo y butifarra.",
+        price: 18,
+        category: "Arepas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 20,
+        name: "Pollo, Carne, Jamón",
+        description: "Arepa con pollo, carne y jamón.",
+        price: 24,
+        category: "Arepas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 21,
+        name: "Chorizo y Butifarra Completa",
+        description: "Arepa con chorizo, butifarra y otros acompañamientos.",
+        price: 24,
+        category: "Arepas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    // Patacones
+    {
+        id: 22,
+        name: "Con Todo",
+        description: "Patacón con salchicha, chorizo, butifarra, pollo, carne, queso mozzarella, lechuga, papitas fosforito, maíz y salsas.",
+        price: 30,
+        category: "Patacones",
+        image: "https://via.placeholder.com/280x200"
+    },
+    // Picadas
+    {
+        id: 23,
+        name: "Sencilla",
+        description: "Papas a la francesa, salchicha, queso mozzarella, salsas, papitas fosforito.",
+        price: 18,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 24,
+        name: "Combinada",
+        description: "Papas a la francesa, salchicha, chorizo, butifarra, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 22,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 25,
+        name: "Mixta",
+        description: "Papas a la francesa, salchicha, pollo, tocineta, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 26,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 26,
+        name: "Home Time",
+        description: "Papas a la francesa, salchicha ranchera, pollo, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 27,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 27,
+        name: "Suiza",
+        description: "Papas a la francesa, salchicha suiza, pollo, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 27,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 28,
+        name: "Pre Adolecente",
+        description: "Papas a la francesa, salchicha, chorizo, pollo, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 37,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 29,
+        name: "Adolecente Especial",
+        description: "Papas a la francesa, salchicha suiza, pollo, carne, chorizo, butifarra, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 43,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 30,
+        name: "Adolecente",
+        description: "Papas a la francesa, salchicha suiza, pollo, carne, queso mozzarella, lechuga, papitas fosforito, salsas.",
+        price: 50,
+        category: "Picadas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    // Asados
+    {
+        id: 31,
+        name: "Carne Asada",
+        description: "Carne asada acompañada de papitas a la francesa, ensalada de lechuga, tomate y cebolla.",
+        price: 30,
+        category: "Asados",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 32,
+        name: "Pechuga Asada",
+        description: "Pechuga asada acompañada de papitas a la francesa, ensalada de lechuga, tomate y cebolla.",
+        price: 30,
+        category: "Asados",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 33,
+        name: "Lomo de Cerdo",
+        description: "Lomo de cerdo acompañado de papitas a la francesa, ensalada de lechuga, tomate y cebolla.",
+        price: 30,
+        category: "Asados",
+        image: "https://via.placeholder.com/280x200"
+    },
+    // Bebidas
+    {
+        id: 34,
+        name: "Gaseosa Personal",
+        description: "Gaseosa individual.",
+        price: 4,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 35,
+        name: "Jugo Natural",
+        description: "Jugo natural servido en vaso.",
+        price: 6,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 36,
+        name: "Botella de Agua Mini",
+        description: "Botella de agua pequeña.",
+        price: 4,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 37,
+        name: "Limonada de Agua",
+        description: "Limonada natural preparada con agua.",
+        price: 6,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 38,
+        name: "Limonada de Coco",
+        description: "Limonada natural con sabor a coco.",
+        price: 6,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    },
+    {
+        id: 39,
+        name: "Cerveza Michelada",
+        description: "Cerveza preparada al estilo michelada.",
+        price: 10,
+        category: "Bebidas",
+        image: "https://via.placeholder.com/280x200"
+    }
+];
+
+
+
+
+
+        /**
+         * Muestra los productos de una categoría dada.
+         * 
+         * @param {string} category - Categoría a mostrar. Puede ser 'Todos' para mostrar todos los productos.
+         */
+        function showProducts(category) {
+            document.getElementById('categoryMenu').style.display = 'none';
+            document.getElementById('productMenu').style.display = 'block';
+
+            const filteredItems = menuItems.filter(item => category === 'Todos' || item.category === category);
+            renderMenuItems(filteredItems);
+        }
+
+        /**
+         * Vuelve a la pantalla de categorías desde la pantalla de productos.
+         */
+        function backToCategories() {
+            document.getElementById('categoryMenu').style.display = 'flex';
+            document.getElementById('productMenu').style.display = 'none';
+        }
+
+        /**
+         * Renderiza una lista de elementos de menú en la pantalla de productos.
+         * 
+         * @param {Array<Object>} items - Arreglo de objetos que representan los productos. Cada objeto debe tener las propiedades 'id', 'name', 'description', 'price' y 'image'.
+         */
+        function renderMenuItems(items) {
+            const menuSection = document.getElementById('menuItems');
+            menuSection.innerHTML = items.map(item => `
+                <div class="menu-item">
+                    <img src="${item.image}" alt="${item.name}">
+                    <div class="menu-item-content">
+                        <h3>${item.name}</h3>
+                        <p class="description">${item.description}</p>
+                        <p class="price">$${item.price.toFixed(2)}</p>
+                        <button class="add-to-cart-btn">Agregar al carrito</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+<div class="footer-banner" style="background-color: #000000; color: #ffffff; text-align: center; padding: 20px; font-size: 1.2em; position: relative;">
+    Todos los derechos reservados © 2023. Home Time. Uso autorizado de productos y servicios.
+</div>
+</html>
